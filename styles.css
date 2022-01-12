@@ -1,0 +1,161 @@
+html {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    height: 100vh;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+}
+
+@font-face {
+    font-family: calculator;
+    src: url(Digital7-1e1Z.ttf);
+}
+
+.calculator {
+    width: 900px;
+    height: 700px;
+    background-color: #464646;
+    border-radius: 30px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-evenly;
+    flex: 1 1 auto;
+    margin: 0 25%;
+    min-width: 900px;
+    box-shadow: 
+        rgba(0, 0, 0, 0.45) 40px 80px 30px -30px, 
+        rgba(0, 0, 0, 0.2) 0px -5px 0px inset, 
+        rgba(184, 184, 184, 0.2) 0px 5px 0px inset, 
+        rgba(184, 184, 184, 0.2) 5px 0px 0px inset, 
+        rgba(0, 0, 0, 0.2) -5px 0px 0px inset;
+}
+
+.display {
+    width: 90%;
+    height: 20%;
+    margin: 30px;
+    background-color: #aaa;
+    color: #222;
+    border: 1px solid #111;
+    border-radius: 30px;
+    text-align: right;
+    box-shadow:
+        rgba(0, 0, 0, 0.4) 0px -5px 0px inset, 
+        rgba(0, 0, 0, 0.8) 0px 5px 0px inset, 
+        rgba(0, 0, 0, 0.8) 5px 0px 0px inset, 
+        rgba(0, 0, 0, 0.4) -5px 0px 0px inset;
+}
+
+.display h1 {
+    font-family: calculator;
+    font-size: 10em;
+    padding: 0 10px 0 10px;
+    margin: 0;
+}
+
+.allButtons {
+    width: 90%;
+    height: 70%;
+    margin: 30px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-evenly;
+}
+
+.btn {
+    font-family: 'Comfortaa', cursive;
+    font-size: 32px;
+    font-weight: bold;
+    border-radius: 10px;
+    border: none;
+    transition: all 0.2s;
+}
+
+.digit {
+    background-color: #ddd;
+    box-shadow:
+    rgba(0, 0, 0, 0.8) 0px -3px 0px inset, 
+    rgba(255, 255, 255, 0.4) 0px 3px 0px inset, 
+    rgba(255, 255, 255, 0.4) 3px 0px 0px inset, 
+    rgba(0, 0, 0, 0.8) -3px 0px 0px inset,
+    rgba(0, 0, 0, 0.5) 0px 2px 0px,
+    rgba(0, 0, 0, 0.5) 0px -2px 0px,
+    rgba(0, 0, 0, 0.5) 2px 0px 0px,
+    rgba(0, 0, 0, 0.5) -2px 0px 0px;
+    transition: all 0.2s;
+}
+
+.digit:hover {
+    background-color: #aaa;
+}
+
+.majorOperator {
+    background-color: #898989;
+    box-shadow:
+    rgba(0, 0, 0, 0.8) 0px -3px 0px inset, 
+    rgba(255, 255, 255, 0.4) 0px 3px 0px inset, 
+    rgba(255, 255, 255, 0.4) 3px 0px 0px inset, 
+    rgba(0, 0, 0, 0.8) -3px 0px 0px inset,
+    rgba(0, 0, 0, 0.5) 0px 2px 0px,
+    rgba(0, 0, 0, 0.5) 0px -2px 0px,
+    rgba(0, 0, 0, 0.5) 2px 0px 0px,
+    rgba(0, 0, 0, 0.5) -2px 0px 0px;
+    transition: all 0.2s;
+}
+
+.majorOperator:hover {
+    background-color: #646464;
+}
+
+.minorOperator {
+    background-color: #666;
+    box-shadow:
+    rgba(0, 0, 0, 0.8) 0px -3px 0px inset, 
+    rgba(255, 255, 255, 0.4) 0px 3px 0px inset, 
+    rgba(255, 255, 255, 0.4) 3px 0px 0px inset, 
+    rgba(0, 0, 0, 0.8) -3px 0px 0px inset,
+    rgba(0, 0, 0, 0.5) 0px 2px 0px,
+    rgba(0, 0, 0, 0.5) 0px -2px 0px,
+    rgba(0, 0, 0, 0.5) 2px 0px 0px,
+    rgba(0, 0, 0, 0.5) -2px 0px 0px;
+    transition: all 0.2s;
+}
+
+.minorOperator:hover {
+    background-color: #333;
+}
+
+.btn:active {
+    box-shadow:
+    rgba(0, 0, 0, 0.8) 0px -1px 0px inset, 
+    rgba(255, 255, 255, 0.4) 0px 2px 0px inset, 
+    rgba(255, 255, 255, 0.4) 2px 0px 0px inset, 
+    rgba(0, 0, 0, 0.8) -1px 0px 0px inset,
+    rgba(0, 0, 0, 0.2) 0px 1px 0px,
+    rgba(0, 0, 0, 0.4) 0px -2px 0px,
+    rgba(0, 0, 0, 0.2) 1px 0px 0px,
+    rgba(0, 0, 0, 0.4) -2px 0px 0px;
+}
+
+.activeBtn {
+    background-color: #111;
+    color: #d7d7d7;
+}
+
+.buttonsLeft, .buttonsRight {
+    display: grid;
+    width: 45%;
+    grid-template-columns: 24% 24% 24% 24%;
+    height: 95%;
+    column-gap: 1.3333%;
+    row-gap: 1%;
+}
