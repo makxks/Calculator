@@ -42,6 +42,13 @@ window.addEventListener('keydown', (e) => {
         pressSingleOperatorButton('=');
         playSound();
     }
+    else if(e.key == 'Delete' || e.key == 'Backspace'){
+        keyboardPressButton('del');
+        if(lastButtonPressedType == "digit"){
+            display.innerHTML = del();
+        }
+        playSound();
+    }
 });
 
 digits.forEach(digit => {
@@ -138,6 +145,7 @@ function pressSingleOperatorButton(button){
     acceptingInput = true;
     dec.disabled = false;
     let currentOperation = button;
+    console.log(currentOperation);
     calculateSingle(currentOperation, display.innerHTML);
 }
 
@@ -203,6 +211,7 @@ function calculate(newOperation, displayValue){
 
 function calculateSingle(newOperation, displayValue){
     // special operations -- clear
+    console.log(newOperation);
     if(newOperation == "clear"){
         clearDisplay();
         clearOpStyles();
@@ -210,13 +219,14 @@ function calculateSingle(newOperation, displayValue){
         operation = "";
     }
     // special operations -- delete
-    else if(newOperation == "del" && lastButtonPressedType == "digit"){   
+    else if(newOperation == "del" && lastButtonPressedType == "digit"){
         display.innerHTML = del();
     }
     // special operations -- equals
     else if(newOperation == "=" && (lastButtonPressedType == "digit" || lastButtonPressedType == "special" || lastButtonPressedType == "prec") && operation!=""){
         values.push(Number(displayValue));
         let result = equals(operation);
+        console.log(result);
         clearDisplay();
         displayScreenValue(result);
         values = [];
