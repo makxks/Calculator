@@ -21,22 +21,26 @@ window.addEventListener('keydown', (e) => {
     if((e.key >= 0 && e.key <= 9) || e.key == '.'){
         keyboardPressButton(e.key);
         pressDigitButton(e.key);
+        playSound();
     }
 
     else if(e.key == '+' || e.key == '-' || e.key == '*' || e.key == '/'){
         keyboardPressButton(e.key);
         pressOperatorButton(e.key);
+        playSound();
     }
 
     else if(e.key == '%' || e.key == '='){
         keyboardPressButton(e.key);
         pressSingleOperatorButton(e.key);
+        playSound();
     }
 
     else if(e.key == 'Enter'){
         // 'translate' Enter button to =
         keyboardPressButton('=');
         pressSingleOperatorButton('=');
+        playSound();
     }
 });
 
@@ -48,15 +52,9 @@ digits.forEach(digit => {
     digit.addEventListener('transitionend', removeTransition);
 });
 
-function removeTransition(e) {
-    if (e.propertyName !== 'box-shadow') return;
-    this.classList.remove('btn-pressed');
-}
-
 btns.forEach(btn => {
     btn.addEventListener('mousedown', () => {
-        buttonSound.currentTime = 0.04;
-        buttonSound.play();
+        playSound();
     });
 });
 
@@ -104,6 +102,16 @@ clear.addEventListener('click', () => {
     values = [];
     operation = "";
 });
+
+function removeTransition(e) {
+    if (e.propertyName !== 'box-shadow') return;
+    this.classList.remove('btn-pressed');
+}
+
+function playSound(){
+    buttonSound.currentTime = 0.04;
+    buttonSound.play();
+}
 
 function pressDigitButton(button){
     if(lastButtonPressedType == "operator" || lastButtonPressedType == "equals" || lastButtonPressedType == "special" || lastButtonPressedType == "prec"){
