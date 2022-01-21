@@ -17,6 +17,7 @@ let acceptingInput = true;
 
 display.innerHTML = "0";
 
+// keyboard press functionality
 window.addEventListener('keydown', (e) => {
     if((e.key >= 0 && e.key <= 9) || e.key == '.'){
         keyboardPressButton(e.key);
@@ -139,6 +140,9 @@ function pressOperatorButton(button){
         calculate(button, display.innerHTML);
         setLastButtonPressedType("operator");
     }
+    else if(lastButtonPressedType == "operator"){
+        calculate(button, display.innerHTML, true);
+    }
 }
 
 function pressSingleOperatorButton(button){
@@ -185,20 +189,24 @@ function addToDisplay(character){
     }
 }
 
-function calculate(newOperation, displayValue){
+function calculate(newOperation, displayValue, changeOperator = false){
     //move clear and del out (and put all single press operators somewhere else) 
-    if(operation != ""){ // if an operation has already been pressed
+    if(operation != "" && !changeOperator){ // if an operation has already been pressed
         // add the current value on the display to the values array
         values.push(Number(displayValue));
         // clear the display ready for the result
         clearDisplay();
         // check the existing operation and perform the operation => display the result
         let result = doOperation(operation);
-        // replace all the values in the values array with the new result
         displayScreenValue(result);
+        // replace all the values in the values array with the new result
         values = [];
         values.push(Number(result));
         // set the new operation as the current operation (if it is a chainable operation)
+        operation = newOperation;
+    }
+    else if(changeOperator){ // used when the last button pressed was an operator and it is not chained
+        // only change the currently used operator
         operation = newOperation;
     }
     else{ //if no operation has been pressed yet
@@ -211,8 +219,8 @@ function calculate(newOperation, displayValue){
 
 function calculateSingle(newOperation, displayValue){
     // special operations -- clear
-    console.log(newOperation);
     if(newOperation == "clear"){
+        // reset calculator
         clearDisplay();
         clearOpStyles();
         values = [];
@@ -224,21 +232,27 @@ function calculateSingle(newOperation, displayValue){
     }
     // special operations -- equals
     else if(newOperation == "=" && (lastButtonPressedType == "digit" || lastButtonPressedType == "special" || lastButtonPressedType == "prec") && operation!=""){
+        // add the current display value to the values
         values.push(Number(displayValue));
+        // calculate according to current operation
         let result = equals(operation);
-        console.log(result);
+        // clear and display result
         clearDisplay();
         displayScreenValue(result);
+        // reset values and operation
         values = [];
         operation = "";
         setLastButtonPressedType("equals");
+        // prepare for next input
         acceptingInput = true;
     }
     // other single press operations -- square -- cube -- inverse -- factorial -- absolute
     else{
+        // calculate single button press operation
         let result = doSingleValueOperation(newOperation, displayValue);
         displayScreenValue(result);
         if(newOperation != "%"){
+            // allows % to chain with itself and other operators alone, without adding other digits
             setLastButtonPressedType("operator");
         }
     }
@@ -260,6 +274,7 @@ function clearDisplay(){
 }
 
 function selectOperation(operation){
+    // style changes
     operations.forEach(op => {
         if(op.dataset.method == operation){
             op.classList.add("activeBtn");
@@ -279,10 +294,12 @@ function selectOperation(operation){
 }
 
 function setLastButtonPressedType(type){
+    // used to determine following actions based on what buttons are pressed next
     lastButtonPressedType = type;
 }
 
 function doOperation(operation){
+    // select operations that require '=' or another operation to see the result
     let result;
     switch (operation) {
         case "+":
@@ -340,6 +357,7 @@ function doOperation(operation){
 }
 
 function doSingleValueOperation(operation, value){
+    // select operations that will be triggered by a single button press
     let result = 0;
     switch (operation) {
         case "square":
@@ -466,6 +484,7 @@ function equals(lastOperation){
 }
 
 function clearOpStyles(){
+    // clear the "pressed" button styles from all buttons
     operations.forEach(op => {
         op.classList.remove("activeBtn");
     })
@@ -475,18 +494,22 @@ function clearOpStyles(){
 }
 
 function displayScreenValue(value, precision = 0){
+    // control display of values
+    // truncate long values to display on screen
     if(String(value).length >= 10){
         acceptingInput = false;
         let precisionMod;
         if(precision == 0){
+            //determine amount of truncation of number string
             precisionMod = 9 - String(value).length/10;
         }
         else{
+            // display according to input precision
             precisionMod = precision;
         }
         display.innerHTML = Number(value).toPrecision(precisionMod);
     }
-    else {
+    else { // display other values as normal
         display.innerHTML = value;
     }
 }
