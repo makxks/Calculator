@@ -10,42 +10,38 @@ let pi = document.querySelector('.pi');
 let clear = document.querySelector('.clear');
 
 let buttonSound = new Audio('Button-sound-effect.mp3');
-let values = [];
-let operation = "";
-let lastButtonPressedType = "";
-let acceptingInput = true;
+
+let varObject = {
+    values: [],
+    operation: "",
+    lastButtonPressedType: "",
+    acceptingInput: true
+}
 
 display.innerHTML = "0";
 
 // keyboard press functionality
 window.addEventListener('keydown', (e) => {
-    if((e.key >= 0 && e.key <= 9) || e.key == '.'){
+    if ((e.key >= 0 && e.key <= 9) || e.key == '.') {
         keyboardPressButton(e.key);
         pressDigitButton(e.key);
         playSound();
-    }
-
-    else if(e.key == '+' || e.key == '-' || e.key == '*' || e.key == '/'){
+    } else if (e.key == '+' || e.key == '-' || e.key == '*' || e.key == '/') {
         keyboardPressButton(e.key);
         pressOperatorButton(e.key);
         playSound();
-    }
-
-    else if(e.key == '%' || e.key == '='){
+    } else if (e.key == '%' || e.key == '=') {
         keyboardPressButton(e.key);
         pressSingleOperatorButton(e.key);
         playSound();
-    }
-
-    else if(e.key == 'Enter'){
+    } else if (e.key == 'Enter') {
         // 'translate' Enter button to =
         keyboardPressButton('=');
         pressSingleOperatorButton('=');
         playSound();
-    }
-    else if(e.key == 'Delete' || e.key == 'Backspace'){
+    } else if (e.key == 'Delete' || e.key == 'Backspace') {
         keyboardPressButton('del');
-        if(lastButtonPressedType == "digit"){
+        if (varObject.lastButtonPressedType == "digit") {
             display.innerHTML = del();
         }
         playSound();
@@ -80,20 +76,22 @@ singleOperation.forEach(op => {
 
 precedingOperation.forEach(op => {
     op.addEventListener('click', (e) => {
-        operation = e.target.dataset.method;
+        if (varObject.operation != "") {
+            calculate(e.target.dataset.method, display.innerHTML);
+        }
+        varObject.operation = e.target.dataset.method;
         selectOperation(e.target.dataset.method);
         setLastButtonPressedType("prec");
     })
 })
 
 posneg.addEventListener('click', () => {
-    if(lastButtonPressedType != "operator"){
-        if(display.innerHTML.split("")[0] == "-"){
+    if (varObject.lastButtonPressedType != "operator") {
+        if (display.innerHTML.split("")[0] == "-") {
             let numbers = display.innerHTML.split("");
             numbers.shift();
             display.innerHTML = numbers.join("");
-        }
-        else{
+        } else {
             display.innerHTML = "-" + display.innerHTML;
         }
     }
@@ -107,8 +105,8 @@ pi.addEventListener('click', () => {
 clear.addEventListener('click', () => {
     clearDisplay();
     clearOpStyles();
-    values = [];
-    operation = "";
+    varObject.values = [];
+    varObject.operation = "";
 });
 
 function removeTransition(e) {
@@ -116,191 +114,193 @@ function removeTransition(e) {
     this.classList.remove('btn-pressed');
 }
 
-function playSound(){
+function playSound() {
     buttonSound.currentTime = 0.04;
     buttonSound.play();
+    return true;
 }
 
-function pressDigitButton(button){
-    if(lastButtonPressedType == "operator" || lastButtonPressedType == "equals" || lastButtonPressedType == "special" || lastButtonPressedType == "prec"){
+function pressDigitButton(button) {
+    if (varObject.lastButtonPressedType == "operator" || varObject.lastButtonPressedType == "equals" || varObject.lastButtonPressedType == "special" || varObject.lastButtonPressedType == "prec") {
         clearDisplay();
     }
-    addToDisplay(button);
-    if(button == '.'){
+    if (button == '.') {
         dec.disabled = true;
     }
     setLastButtonPressedType("digit");
+    return addToDisplay(button);
 }
 
-function pressOperatorButton(button){
-    acceptingInput = true;
+function pressOperatorButton(button) {
+    varObject.acceptingInput = true;
     dec.disabled = false;
-    selectOperation(button);
-    if(lastButtonPressedType != "operator"){
+    let newOperator = selectOperation(button);
+    if (varObject.lastButtonPressedType != "operator") {
         calculate(button, display.innerHTML);
         setLastButtonPressedType("operator");
-    }
-    else if(lastButtonPressedType == "operator"){
+    } else if (varObject.lastButtonPressedType == "operator") {
         calculate(button, display.innerHTML, true);
     }
+    return newOperator;
 }
 
-function pressSingleOperatorButton(button){
-    acceptingInput = true;
+function pressSingleOperatorButton(button) {
+    varObject.acceptingInput = true;
     dec.disabled = false;
     let currentOperation = button;
-    console.log(currentOperation);
     calculateSingle(currentOperation, display.innerHTML);
+    return currentOperation;
 }
 
-function keyboardPressButton(button){
+function keyboardPressButton(button) {
     let key = document.querySelector(`button[data-method="${button}"`);
     key.classList.add('btn-pressed');
 }
 
-function addToDisplayBasic(character){
-    if(acceptingInput){
+function addToDisplayBasic(character, acceptingInput = true) {
+    if (acceptingInput) {
         display.innerHTML += character;
         displayScreenValue(display.innerHTML);
     }
+    return display.innerHTML.split('')[display.innerHTML.length - 1];
 }
 
-function addToDisplay(character){
-    if(display.innerHTML == "0"){
-        if(character == "."){
-            addToDisplayBasic(character);
-        }
-        else if(character == '0'){
-            return;
-        }
-        else{
+function addToDisplay(character) {
+    let newDisplayCharacter;
+    if (display.innerHTML == "0") {
+        if (character == ".") {
+            newDisplayCharacter = addToDisplayBasic(character, varObject.acceptingInput);
+        } else if (character == '0') {
+            newDisplayCharacter = '0';
+        } else {
             display.innerHTML = character;
+            newDisplayCharacter = display.innerHTML.split('')[display.innerHTML.length - 1];
         }
-    }
-    else{
-        if(display.innerHTML.includes('.')){
-            if(character != '.'){
-                addToDisplayBasic(character);
+    } else {
+        if (display.innerHTML.includes('.')) {
+            if (character != '.') {
+                newDisplayCharacter = addToDisplayBasic(character, varObject.acceptingInput);
             }
-        }
-        else{
-            addToDisplayBasic(character);
+            return display.innerHTML.split('')[display.innerHTML.length - 1];
+        } else {
+            newDisplayCharacter = addToDisplayBasic(character, varObject.acceptingInput);
         }
     }
+    return newDisplayCharacter;
 }
 
-function calculate(newOperation, displayValue, changeOperator = false){
-    //move clear and del out (and put all single press operators somewhere else) 
-    if(operation != "" && !changeOperator){ // if an operation has already been pressed
+function calculate(newOperation, displayValue, changeOperator = false) {
+    //move clear and del out (and put all single press operators somewhere else)
+    if (varObject.operation != "" && !changeOperator) { // if an operation has already been pressed
         // add the current value on the display to the values array
-        values.push(Number(displayValue));
+        varObject.values.push(Number(displayValue));
         // clear the display ready for the result
         clearDisplay();
         // check the existing operation and perform the operation => display the result
-        let result = doOperation(operation);
+        let result = doOperation(varObject.operation);
         displayScreenValue(result);
         // replace all the values in the values array with the new result
-        values = [];
-        values.push(Number(result));
+        varObject.values = [];
+        varObject.values.push(Number(result));
         // set the new operation as the current operation (if it is a chainable operation)
-        operation = newOperation;
-    }
-    else if(changeOperator){ // used when the last button pressed was an operator and it is not chained
+        varObject.operation = newOperation;
+    } else if (changeOperator) { // used when the last button pressed was an operator and it is not chained
         // only change the currently used operator
-        operation = newOperation;
-    }
-    else{ //if no operation has been pressed yet
+        varObject.operation = newOperation;
+    } else { //if no operation has been pressed yet
         // set the new operation as the current operation
-        operation = newOperation;
+        varObject.operation = newOperation;
         // push the current value into the values array
-        values.push(Number(displayValue));
+        varObject.values.push(Number(displayValue));
     }
 }
 
-function calculateSingle(newOperation, displayValue){
+function calculateSingle(newOperation, displayValue) {
     // special operations -- clear
-    if(newOperation == "clear"){
+    if (newOperation == "clear") {
         // reset calculator
         clearDisplay();
         clearOpStyles();
-        values = [];
-        operation = "";
+        varObject.values = [];
+        varObject.operation = "";
     }
     // special operations -- delete
-    else if(newOperation == "del" && lastButtonPressedType == "digit"){
+    else if (newOperation == "del" && varObject.lastButtonPressedType == "digit") {
         display.innerHTML = del();
     }
     // special operations -- equals
-    else if(newOperation == "=" && (lastButtonPressedType == "digit" || lastButtonPressedType == "special" || lastButtonPressedType == "prec") && operation!=""){
+    else if (newOperation == "=" && (varObject.lastButtonPressedType == "digit" || varObject.lastButtonPressedType == "special" || varObject.lastButtonPressedType == "prec") && varObject.operation != "") {
         // add the current display value to the values
-        values.push(Number(displayValue));
+        varObject.values.push(Number(displayValue));
         // calculate according to current operation
-        let result = equals(operation);
+        let result = equals(varObject.operation);
         // clear and display result
         clearDisplay();
         displayScreenValue(result);
         // reset values and operation
-        values = [];
-        operation = "";
+        varObject.values = [];
+        varObject.operation = "";
         setLastButtonPressedType("equals");
         // prepare for next input
-        acceptingInput = true;
+        varObject.acceptingInput = true;
     }
     // other single press operations -- square -- cube -- inverse -- factorial -- absolute
-    else{
+    else {
         // calculate single button press operation
         let result = doSingleValueOperation(newOperation, displayValue);
         displayScreenValue(result);
-        if(newOperation != "%"){
+        if (newOperation != "%") {
             // allows % to chain with itself and other operators alone, without adding other digits
             setLastButtonPressedType("operator");
         }
     }
 }
 
-function del(){
+function del() {
     let numbers = display.innerHTML.split("");
     numbers.pop();
-    if(numbers.length >= 1){
+    if (numbers.length >= 1) {
         return numbers.join("");
-    }
-    else{
-        return 0;
+    } else {
+        return '0';
     }
 }
 
-function clearDisplay(){
+function clearDisplay() {
     display.innerHTML = "0";
 }
 
-function selectOperation(operation){
+function selectOperation(operation) {
     // style changes
+    let selectedOperator;
     operations.forEach(op => {
-        if(op.dataset.method == operation){
+        if (op.dataset.method == operation) {
             op.classList.add("activeBtn");
-        }
-        else {
+            selectedOperator = op.dataset.method;
+        } else {
             op.classList.remove("activeBtn");
         }
-    })
+    });
     precedingOperation.forEach(op => {
-        if(op.dataset.method == operation){
+        if (op.dataset.method == operation) {
             op.classList.add("activeBtn");
-        }
-        else {
+            selectedOperator = op.dataset.method;
+        } else {
             op.classList.remove("activeBtn");
         }
-    })
+    });
+    return selectedOperator;
 }
 
-function setLastButtonPressedType(type){
+function setLastButtonPressedType(type) {
     // used to determine following actions based on what buttons are pressed next
-    lastButtonPressedType = type;
+    varObject.lastButtonPressedType = type;
+    return type;
 }
 
-function doOperation(operation){
+function doOperation(operation) {
     // select operations that require '=' or another operation to see the result
-    let result;
+    let result = 0;
     switch (operation) {
         case "+":
             result = add();
@@ -356,7 +356,7 @@ function doOperation(operation){
     return result;
 }
 
-function doSingleValueOperation(operation, value){
+function doSingleValueOperation(operation, value) {
     // select operations that will be triggered by a single button press
     let result = 0;
     switch (operation) {
@@ -370,10 +370,9 @@ function doSingleValueOperation(operation, value){
             result = invert(value);
             break;
         case "fact":
-            if (value <= 200){
+            if (value <= 200) {
                 result = factorial(value);
-            }
-            else {
+            } else {
                 result = Infinity;
             }
             break;
@@ -384,106 +383,106 @@ function doSingleValueOperation(operation, value){
             result = value / 100;
             break;
         default:
-            result = value;
+            result = +value;
             break;
     }
     return result;
 }
 
-function factorial(value){
-    if(value < 0){
+function factorial(value) {
+    // no non-integer factorials
+    value = Math.round(value);
+    if (value < 0) {
         return -1;
-    }
-    else if(value == 0){
+    } else if (value == 0) {
         return 1;
-    }
-    else {
+    } else {
         return (value * factorial(value - 1));
     }
 }
 
-function add(){
-    return values.reduce((result, value) => { return result + value });
+function add() {
+    return varObject.values.reduce((result, value) => { return result + value });
 }
 
-function subtract(){
-    return values.reduce((result, value) => { return result - value });
+function subtract() {
+    return varObject.values.reduce((result, value) => { return result - value });
 }
 
-function multiply(){
-    return values.reduce((result, value) => { return result * value });
+function multiply() {
+    return varObject.values.reduce((result, value) => { return result * value });
 }
 
-function divide(){
-    return values.reduce((result, value) => { return result / value });
+function divide() {
+    return varObject.values.reduce((result, value) => { return result / value });
 }
 
-function square(value){
+function square(value) {
     return value ** 2;
 }
 
-function cube(value){
+function cube(value) {
     return value ** 3;
 }
 
-function invert(value){
-    return (1/value);
+function invert(value) {
+    return (1 / value);
 }
 
-function power(){
-    return values.reduce((result, value) => { return result ** value});
+function power() {
+    return varObject.values.reduce((result, value) => { return result ** value });
 }
 
-function euler(){
-    return Math.E ** values[0];
+function euler() {
+    return Math.E ** varObject.values[0];
 }
 
-function sqrt(){
-    return Math.sqrt(values[0]);
+function sqrt() {
+    return Math.sqrt(varObject.values[0]);
 }
 
-function cbrt(){
-    return Math.cbrt(values[0]);
+function cbrt() {
+    return Math.cbrt(varObject.values[0]);
 }
 
-function sin(){
-    return Math.sin(values[0]);
+function sin() {
+    return Math.sin(varObject.values[0]);
 }
 
-function cos(){
-    return Math.cos(values[0]);
+function cos() {
+    return Math.cos(varObject.values[0]);
 }
 
-function tan(){
-    return Math.tan(values[0]);
+function tan() {
+    return Math.tan(varObject.values[0]);
 }
 
-function asin(){
-    return Math.asin(values[0]);
+function asin() {
+    return Math.asin(varObject.values[0]);
 }
 
-function acos(){
-    return Math.acos(values[0]);
+function acos() {
+    return Math.acos(varObject.values[0]);
 }
 
-function atan(){
-    return Math.atan(values[0]);
+function atan() {
+    return Math.atan(varObject.values[0]);
 }
 
-function log10(){
-    return Math.log10(values[0]);
+function log10() {
+    return Math.log10(varObject.values[0]);
 }
 
-function ln(){
-    return Math.log(values[0]);
+function ln() {
+    return Math.log(varObject.values[0]);
 }
 
-function equals(lastOperation){
+function equals(lastOperation) {
     clearOpStyles();
     return doOperation(lastOperation);
 }
 
-function clearOpStyles(){
+function clearOpStyles() {
     // clear the "pressed" button styles from all buttons
     operations.forEach(op => {
         op.classList.remove("activeBtn");
@@ -493,23 +492,65 @@ function clearOpStyles(){
     })
 }
 
-function displayScreenValue(value, precision = 0){
+function displayScreenValue(value, precision = 0) {
     // control display of values
     // truncate long values to display on screen
-    if(String(value).length >= 10){
-        acceptingInput = false;
+    if (String(value).length >= 10) {
+        varObject.acceptingInput = false;
         let precisionMod;
-        if(precision == 0){
+        if (precision == 0) {
             //determine amount of truncation of number string
-            precisionMod = 9 - String(value).length/10;
-        }
-        else{
+            precisionMod = 9 - String(value).length / 10;
+        } else {
             // display according to input precision
             precisionMod = precision;
         }
         display.innerHTML = Number(value).toPrecision(precisionMod);
-    }
-    else { // display other values as normal
+    } else { // display other values as normal
         display.innerHTML = value;
     }
+    return display.innerHTML;
+}
+
+module.exports = {
+    removeTransition,
+    playSound,
+    pressDigitButton,
+    pressSingleOperatorButton,
+    pressOperatorButton,
+    keyboardPressButton,
+    addToDisplayBasic,
+    addToDisplay,
+    calculate,
+    calculateSingle,
+    del,
+    clearDisplay,
+    selectOperation,
+    setLastButtonPressedType,
+    doOperation,
+    doSingleValueOperation,
+    factorial,
+    add,
+    subtract,
+    multiply,
+    divide,
+    square,
+    cube,
+    invert,
+    power,
+    euler,
+    sqrt,
+    cbrt,
+    sin,
+    cos,
+    tan,
+    asin,
+    acos,
+    atan,
+    log10,
+    ln,
+    equals,
+    clearOpStyles,
+    displayScreenValue,
+    varObject
 }
