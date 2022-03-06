@@ -9,6 +9,5 @@
     "jest": {
         "verbose": true,
         "testEnvironment": "jsdom"
-    },
-    "type": "module"
+    }
 }
