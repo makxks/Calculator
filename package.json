@@ -1,13 +1,14 @@
 {
-  "scripts": {
-    "test": "jest"
-  },
-  "devDependencies": {
-    "cypress": "^9.5.1",
-    "jest": "^27.5.1"
-  },
-  "jest": {
-    "verbose": true,
-    "testEnvironment": "jsdom"
-  }
+    "scripts": {
+        "test": "jest"
+    },
+    "devDependencies": {
+        "cypress": "^9.5.1",
+        "jest": "^27.5.1"
+    },
+    "jest": {
+        "verbose": true,
+        "testEnvironment": "jsdom"
+    },
+    "type": "module"
 }
