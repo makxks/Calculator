@@ -1,3 +1,5 @@
+import { jest } from '@jest/globals';
+
 let scripts;
 
 beforeAll(() => {

@@ -512,7 +512,7 @@ function displayScreenValue(value, precision = 0) {
     return display.innerHTML;
 }
 
-module.exports = {
+export {
     removeTransition,
     playSound,
     pressDigitButton,
