@@ -42,7 +42,9 @@ describe('Chains calculations', () => {
             expect($h1[0].innerText).to.equal('2');
         });
 
+
         cy.get('[data-method="2"]').click();
+        cy.get('[data-method="="]').click();
 
         cy.get('h1').should(($h1) => {
             expect($h1[0].innerText).to.equal('0');
