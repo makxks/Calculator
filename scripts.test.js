@@ -1,5 +1,7 @@
 let scripts;
 
+window.HTMLMediaElement.prototype.play = () => { /* do nothing */ };
+
 beforeAll(() => {
     document.body.innerHTML = `
     <section class="calculator">
