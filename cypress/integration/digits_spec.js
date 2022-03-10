@@ -1,7 +1,7 @@
 describe('Digit buttons respond to presses', () => {
     before(() => {
         cy.visit('https://makxks.github.io/Calculator/');
-    })
+    });
     beforeEach(() => {
         cy.get('button.clear').contains('C').click();
     });
